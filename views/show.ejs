@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+        /* Base */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 62.5%;
+}
+
+body {
+  box-sizing: inherit;
+  background-color: #0d1b2a;
+}
+.board {
+  border: 1px solid white;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+        .card {
+  background-color: aliceblue;
+  width: 70%;
+  margin: 2rem auto;
+  padding: 2rem;
+  border-radius: 2rem;
+}
+
+.card-description {
+  width: 70%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.title {
+  font-size: 3.2rem;
+  margin-bottom: 0.5rem;
+  text-decoration: underline;
+}
+
+.createdAt {
+  font-size: 1.7rem;
+  margin-bottom: 0.5rem;
+}
+
+.author {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.content {
+    margin-top:2rem;
+  font-size: 1.3rem;
+  
+}
+
+.comment-box{
+    width: 60%;
+    display: flex;
+    justify-content: center;
+}
+
+.comment-input{
+    width: 100%;
+    padding: 2rem;
+}
+
+.btn-group{
+    margin-top: 2rem;
+    text-align: center;
+}
+
+#comment-msg{
+  padding-top:1rem
+ }
+
+.comment-list{
+    margin-top: 2rem;
+    width: 60%;
+    background-color: antiquewhite;
+    border-radius: 1.5rem;
+    padding-top: 1rem;
+    padding-left: 10rem;
+    padding-right: 1rem;
+    padding-bottom: 0.4rem;
+}
+
+.list-item {
+    display: flex;
+    justify-content: space-between;
+    font-size: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+.date-creator{
+  display: flex;
+  flex-direction: column;
+}
+
+#comment-creator{
+  text-align: right;
+  margin-bottom: 0.2rem;
+}
+
+.btns{
+  display: flex;
+  justify-content:flex-end
+}
+
+.hidden{
+  display: none;
+}
+
+
+    </style>
+    <title>Document</title>
+  </head>
+  <body>
+    <main class="board">   
+        <div class="card">   
+        <div class="card-description">
+            <h2 class="title"><%=post.title%></h2>
+            <div></div>
+              <span class="createdAt"><%=post.createdAt.toLocaleDateString()%></span>
+              <span class="author"><%=post.author%></span>             
+                  <p class="content">
+                    <%=post.content%>
+                  </p>             
+            </div>
+            <div class="btn-group">
+                <input id="btn-edit" type="button" value="Edit">
+                <input id=btn-back type="button" value="Back">
+            </div>
+          </div>
+        </div>
+        <div class="comment-box" id="comment-box">
+            <textarea class="comment-input" name="comment" id="comment-input"></textarea>
+            <input id="add-comment" type="submit" value="Submit">
+        </div>
+        <div class="comment-box hidden" id="comment-edit-box">
+            <textarea class="comment-input" name="comment" id="update-comment"></textarea>
+            <input id="btn-update" type="submit" value="Submit">
+        </div>
+
+        <ul class="comment-list" id="comment-list">
+            <% comments.forEach(comment => { %>
+              <li class="list-item">
+                <span class="comment-msg" id="comment-msg"><%=comment.comment%></span>
+                <div class="date-creator">
+                  <span id="comment-createdAt"><%=comment.createdAt.toLocaleString()%></span>
+                  <span class="comment-creator" id="comment-creator"><%= comment.creator%></span>
+                      
+                  <div class="btns">
+                    <input class="btn-comment-edit" id="btn-comment-edit" type="button" value="edit">
+                    <input class="btn-comment-delete" id="btn-comment-delete" type="button" value="delete">
+                  </div>            
+                </div>
+              </li>
+      <% }) %>
+            </ul>
+    </main>
+    <script>
+       const token = localStorage.getItem('token') 
+      const postId = window.location.pathname.split('/').pop();
+        
+        const btnEdit = document.getElementById('btn-edit')
+        const btnBack = document.getElementById('btn-back')
+        const commentBox = document.getElementById('comment-box')
+        const commentEditBox = document.getElementById('comment-edit-box')
+        const btnAddComment = document.getElementById('add-comment')
+        const btnCommentEdit = document.querySelectorAll('.btn-comment-edit') 
+        const btnCommentDelete = document.querySelectorAll('.btn-comment-delete') 
+        const btnUpdateComment=document.getElementById('btn-update')
+
+        const addComment = async (e) => {    
+            const token = localStorage.getItem('token')  
+            const commentMsg = document.getElementById('comment-input');
+            if(commentMsg.value === ''){
+              return alert('you cannot leave it empty')
+            }
+            const res =await fetch('/comments', {
+                method:"POST",
+                headers:{'Content-Type':'application/json',
+            "Authorization":"Bearer " + token}, 
+                body: JSON.stringify({commentId:postId,comment:commentMsg.value,
+                creator:localStorage.getItem('token')})})
+                
+                if(!res.ok){
+                  alert('Please signin to leave comment')
+                  window.location.href="/"
+                  
+                }
+            const data = await res.json()
+            console.log(data);
+            if(data.status==='ok'){
+                commentMsg.value= ""
+                window.location.reload();
+            } 
+                };
+
+        
+      
+         
+        // To Edit Post
+        btnEdit.addEventListener('click',(e)=>{
+            e.preventDefault();
+            if(token !==null){
+              window.location.href=`/posts/edit/${postId}`
+            } else{
+              alert('Please signin!')
+              window.location.href="/"
+            }
+        })
+        // To Home
+        btnBack.addEventListener('click',(e)=>{
+            e.preventDefault();
+            window.location.href="/"
+        })
+        // Add comment
+        btnAddComment.addEventListener('click',addComment)
+
+      
+        
+        //Update comment start
+        //  Loop edit btns because of querSelectorAll
+        btnCommentEdit.forEach((btn, i)=>{
+          const commentMsg = document.querySelectorAll('.comment-msg')
+          const commentCreator = document.querySelectorAll('.comment-creator')
+          btn.addEventListener('click', (e)=>{
+            if(!localStorage.getItem('token'))
+            return alert('You are not allowed, please try again after signin')
+            const updateComment = document.getElementById('update-comment')
+            commentBox.classList.add('hidden')
+            commentEditBox.classList.remove('hidden')
+            updateComment.value=commentMsg[i].textContent
+            
+            
+            // update comment
+             btnUpdateComment.addEventListener('click',async (e)=>{
+              const creator = commentCreator[i].textContent
+              const previousComment= commentMsg[i].textContent
+              console.log(previousComment);
+              const newComment = document.getElementById('update-comment')
+              const res = await fetch(`/comments/update/${postId}`,{
+                method:"PATCH",
+                headers:{
+                  "Content-Type":"application/json",
+                  Authorization:"Bearer " + token
+                },
+                body:JSON.stringify({
+                  comment:newComment.value, 
+                  previousComment:previousComment,
+                  creator:creator,
+                  currentUser:localStorage.getItem('token')             
+                })
+              })
+              const data = await res.json();
+              
+              if (data.status === "ok"){
+                alert(data.message)
+                return window.location.reload();
+                
+              }else{
+                alert(data.message)
+                return window.location.reload();
+              }
+              
+            })
+          })                
+       })
+        //Update comment end
+
+        //Delete comment start
+        btnCommentDelete.forEach((btn, i)=>{
+          const commentMsg = document.querySelectorAll('.comment-msg')
+          const commentCreator = document.querySelectorAll('.comment-creator')
+ 
+
+          btn.addEventListener('click', async (e)=>{
+            if(!confirm('DO YOU REALLY WANT TO PROCEED?'))return window.location.reload()            
+            if(!localStorage.getItem('token'))
+            return alert('You are not allowed, please try again after signin')
+            const comment= commentMsg[i].textContent
+
+            const creator = commentCreator[i].textContent                              
+              const res = await fetch(`/comments/delete/${postId}`,{
+                method:"DELETE",
+                headers:{
+                  "Content-Type":"application/json",
+                  Authorization:"Bearer " + token
+                },
+                body:JSON.stringify({
+                  comment:comment,
+                  creator:creator
+                  ,currentUser:localStorage.getItem('token')              
+                })
+              })
+              const data = await res.json();
+              console.log(data);
+              
+              if (data.status === "ok"){
+                alert(data.message)
+                window.location.reload();
+                return
+              }else{
+                alert(data.message)
+                return window.location.reload();        
+              }            
+          })                
+       })
+      //  Delete comment end
+        </script>
+  </body>
+  </html>
+  

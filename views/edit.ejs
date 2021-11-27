@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      /* Base */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html {
+        font-size: 62.5%;
+      }
+
+      body {
+        box-sizing: inherit;
+        background-color: #0d1b2a;
+      }
+
+      .container {
+        height: 100vh;
+        width: 60%;
+        margin: 0 auto;
+        display: flex;
+
+        justify-content: center;
+        align-items: center;
+      }
+
+      .content {
+        border: 1px solid white;
+        width: 80%;
+      }
+
+      .content-title {
+        font-size: 1.5rem;
+      }
+
+      .password {
+        padding: 1rem;
+      }
+
+      label {
+        margin-bottom: 1rem;
+        margin-top: 1rem;
+        font-size: 1.5rem;
+      }
+
+      .content-description {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 80%;
+        height: 80%;
+        background-color: antiquewhite;
+        border-radius: 2rem;
+      }
+
+      .content-main {
+        height: 60%;
+        width: 60%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .content-main textarea {
+        width: 80%;
+        height: 80%;
+        margin-bottom: 1rem;
+        margin-top: 2rem;
+      }
+
+      .content-main input {
+        width: 20%;
+      }
+
+      #btn-edit {
+        margin-bottom: 1rem;
+      }
+
+      #btn-delete {
+        margin-bottom: 1rem;
+      }
+    </style>
+
+    <title>Jun's Awesome Blog</title>
+  </head>
+  <body>
+    <main class="container">
+      <div class="content-description">
+        <label for="title">Title</label>
+        <textarea name="title" class="content-title" id="content-title">
+<%=post.title %></textarea
+        >
+
+        <label for="password">Password</label>
+        <input class="password" id="password" type="password" />
+
+        <div class="content-main">
+          <textarea name="content" id="content"><%=post.content%></textarea>
+          <input id="btn-edit" type="button" value="SUBMIT" />
+          <input id="btn-delete" type="button" value="DLETE" />
+          <input id="btn-back" type="button" value="BACK" />
+        </div>
+      </div>
+    </main>
+    <script>
+      const postId = window.location.pathname.split("/").pop();
+      const btnEditComplete = document.getElementById("btn-edit");
+      const btnBackToPost = document.getElementById("btn-back");
+      const btnDeletePost = document.getElementById("btn-delete");
+      // PATCH POST
+      const editPost = async (e) => {
+        e.preventDefault();
+        const token = localStorage.getItem("token");
+        const content = document.getElementById("content");
+        const title = document.getElementById("content-title");
+        const password = document.getElementById("password");
+        console.log(password.value);
+        const res = await fetch(`/posts/edit/${postId}`, {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer" + token,
+          },
+          body: JSON.stringify({
+            content: content.value,
+            title: title.value,
+            password: password.value,
+          }),
+        });
+        console.log(res);
+        const data = await res.json();
+        console.log(data);
+
+        if (data.status === "ok") {
+          alert(data.message);
+          window.location.href = `/posts/${postId}`;
+        }
+      };
+
+      // DELETE POST
+      const deletePost = async (e) => {
+        const token = localStorage.getItem("token");
+        const password = document.getElementById("password");
+        e.preventDefault();
+        const res = await fetch(`/posts/delete/${postId}`, {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + token,
+          },
+          body: JSON.stringify({
+            password: password.value,
+          }),
+        });
+
+        const data = await res.json();
+
+        if (data.status === "ok") {
+          alert(data.message);
+          window.location.href = "/";
+        } else {
+          alert(data.message);
+        }
+      };
+
+      btnEditComplete.addEventListener("click", editPost);
+      btnDeletePost.addEventListener("click", deletePost);
+      btnBackToPost.addEventListener("click", (e) => {
+        window.location.href = `/posts/${postId}`;
+      });
+    </script>
+  </body>
+</html>

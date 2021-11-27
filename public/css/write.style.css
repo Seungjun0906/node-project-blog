@@ -1,0 +1,66 @@
+/* Base */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 62.5%;
+}
+
+body {
+  box-sizing: inherit;
+  background-color: #0d1b2a;
+}
+
+.container {
+  height: 100vh;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.form-content {
+  height: 70%;
+  width: 50%;
+  border-radius: 2rem;
+  background-color: rgb(146, 142, 136);
+  padding: 2rem;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 60%;
+}
+
+.form-group label {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.form-control {
+  width: 80%;
+  padding: 0.5rem;
+  border: 1px solid black;
+  margin-bottom: 1rem;
+}
+
+#author,
+#password {
+  width: 30%;
+}
+
+.btn-submit {
+  width: 10%;
+  padding: 1rem;
+}

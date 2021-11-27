@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Document</title>
+  </head>
+  <body>
+    <main class="container" id="container">hello</main>
+
+    <script>
+      const container = document.getElementById("container");
+      const postId = window.location.pathname.split("/").pop();
+      console.log(postId);
+
+      const apiURL = `/posts/${postId}`;
+      const showPost = async (e) => {
+        const res = await fetch(apiURL);
+        // console.log(res);
+        const data = await res.json();
+        console.log(data);
+      };
+
+      // const html = `<div class="card-description">
+      //     <h2 class="title">${title}</h2>
+      //     <span class="createdAt">${date}</span>
+      //     <span class="author">${author}</span>
+      //     <p class="content">
+      //      ${content}
+      //     </p>
+      //   </div>
+      // </div>`;
+
+      window.addEventListener("load", showPost);
+    </script>
+  </body>
+</html>
