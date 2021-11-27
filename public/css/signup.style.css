@@ -37,6 +37,12 @@ body {
   padding: 0 2rem;
 }
 
+.validation {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+  margin-top: -1rem;
+}
+
 .form-control {
   width: 90%;
   font-size: 1.5rem;

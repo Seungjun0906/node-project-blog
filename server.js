@@ -3,8 +3,7 @@ const app = require("./app");
 const mongoose = require("mongoose");
 
 const PORT = process.env.PORT || 5000;
-const DBURL =
-  "mongodb+srv://blog_project:Vja6yEDDZfXyAcXk@cluster0.n53kq.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
+const DBURL = "mongo mongo";
 
 const server = http.createServer(app);
 
